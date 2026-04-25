@@ -332,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen>
         // Animated stamp
         AnimatedBuilder(
           animation: _stampCtrl,
-          builder: (_, __) => Opacity(
+          builder: (_, _) => Opacity(
             opacity: _stampOpacity.value,
             child: Transform.rotate(
               angle: _stampRotate.value,
