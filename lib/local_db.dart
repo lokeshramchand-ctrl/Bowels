@@ -24,7 +24,13 @@ class LocalDB {
     return box.values.where((e) => !e.isSynced).toList();
   }
 
+  /// Uses explicit box.put() instead of entry.save() so the write always
+  /// succeeds regardless of the HiveObject's internal box-reference state.
   static Future<void> update(LogEntry entry) async {
-    await entry.save();
+    await box.put(entry.id, entry);
+  }
+
+  static Future<void> delete(String id) async {
+    await box.delete(id);
   }
 }

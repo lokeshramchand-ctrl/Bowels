@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:popper/mock_data.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'local_db.dart';
@@ -10,7 +9,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await LocalDB.init();
-  await MockData.seed();
   final prefs = await SharedPreferences.getInstance();
   String? deviceId = prefs.getString('device_id');
 
@@ -30,9 +28,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       routes: {
         '/': (_) => HomeScreen(deviceId: deviceId),
-        '/history': (_) => const HistoryScreen(),
+        '/history': (_) => HistoryScreen(deviceId: deviceId),
       },
     );
   }
