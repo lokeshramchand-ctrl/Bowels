@@ -307,17 +307,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   letterSpacing: 1.8,
                 ),
               ),
-              const SizedBox(height: 3),
-              Text(
-                'DAILY RECORD',
-
-                style: const TextStyle(
-                  fontFamily: 'IBMPlexMono',
-                  color: _dust,
-                  fontSize: 8,
-                  letterSpacing: 2.2,
-                ),
-              ),
+            
             ],
           ),
           Padding(
@@ -342,7 +332,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),),
 
                 ),
-                const SizedBox(width: 5),
               ],
             ),
           ),
