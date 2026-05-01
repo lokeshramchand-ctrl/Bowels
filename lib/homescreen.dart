@@ -31,14 +31,12 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with TickerProviderStateMixin {
-
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   // ── Logic ──────────────────────────────────────────────────────
   final api = ApiService();
   late SyncService sync;
-  bool doneToday = false;   // true if at least one entry exists today
-  int todayCount = 0;       // how many times logged today
+  bool doneToday = false; // true if at least one entry exists today
+  int todayCount = 0; // how many times logged today
   DateTime? lastTime;
 
   // ── UI state ───────────────────────────────────────────────────
@@ -54,14 +52,14 @@ class _HomeScreenState extends State<HomeScreen>
   late Animation<double> _stampOpacity;
   late Animation<double> _stampRotate;
   late Animation<double> _pageFade;
-  late Animation<Offset>  _pageSlide;
+  late Animation<Offset> _pageSlide;
   late Animation<double> _pressScale;
 
   // ── Palette ────────────────────────────────────────────────────
-  static const Color _linen      = Color(0xFFEEE8DC);
-  static const Color _walnut     = Color(0xFF1C1510);
-  static const Color _dust       = Color(0xFF8C7B68);
-  static const Color _rule       = Color(0xFFC9BFA8);
+  static const Color _linen = Color(0xFFEEE8DC);
+  static const Color _walnut = Color(0xFF1C1510);
+  static const Color _dust = Color(0xFF8C7B68);
+  static const Color _rule = Color(0xFFC9BFA8);
   static const Color _terracotta = Color(0xFFB85C38);
 
   @override
@@ -74,28 +72,27 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this,
       duration: const Duration(milliseconds: 700),
     );
-    _stampScale = CurvedAnimation(
-      parent: _stampCtrl,
-      curve: Curves.elasticOut,
-    );
+    _stampScale = CurvedAnimation(parent: _stampCtrl, curve: Curves.elasticOut);
     _stampOpacity = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: _stampCtrl,
         curve: const Interval(0, 0.3, curve: Curves.easeIn),
       ),
     );
-    _stampRotate = Tween<double>(begin: -0.19, end: -0.07).animate(
-      CurvedAnimation(parent: _stampCtrl, curve: Curves.elasticOut),
-    );
+    _stampRotate = Tween<double>(
+      begin: -0.19,
+      end: -0.07,
+    ).animate(CurvedAnimation(parent: _stampCtrl, curve: Curves.elasticOut));
 
     // Page: fade + rise
     _pageCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 520),
     );
-    _pageFade = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _pageCtrl, curve: Curves.easeOut),
-    );
+    _pageFade = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _pageCtrl, curve: Curves.easeOut));
     _pageSlide = Tween<Offset>(
       begin: const Offset(0, 0.05),
       end: Offset.zero,
@@ -107,9 +104,10 @@ class _HomeScreenState extends State<HomeScreen>
       duration: const Duration(milliseconds: 90),
       reverseDuration: const Duration(milliseconds: 160),
     );
-    _pressScale = Tween<double>(begin: 1.0, end: 0.97).animate(
-      CurvedAnimation(parent: _pressCtrl, curve: Curves.easeIn),
-    );
+    _pressScale = Tween<double>(
+      begin: 1.0,
+      end: 0.97,
+    ).animate(CurvedAnimation(parent: _pressCtrl, curve: Curves.easeIn));
 
     load();
   }
@@ -124,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   // ── Load ─────────────────────────────────────────────────────────
   Future<void> load() async {
-    final logs  = LocalDB.getAll();
+    final logs = LocalDB.getAll();
     final today = DateTime.now();
 
     if (logs.isNotEmpty) {
@@ -133,16 +131,22 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     // doneToday = at least one entry today
-    doneToday = logs.any((e) =>
-        e.timestamp.day   == today.day   &&
-        e.timestamp.month == today.month &&
-        e.timestamp.year  == today.year);
+    doneToday = logs.any(
+      (e) =>
+          e.timestamp.day == today.day &&
+          e.timestamp.month == today.month &&
+          e.timestamp.year == today.year,
+    );
 
     // todayCount = total entries today (may be > 1)
-    todayCount = logs.where((e) =>
-        e.timestamp.day   == today.day   &&
-        e.timestamp.month == today.month &&
-        e.timestamp.year  == today.year).length;
+    todayCount = logs
+        .where(
+          (e) =>
+              e.timestamp.day == today.day &&
+              e.timestamp.month == today.month &&
+              e.timestamp.year == today.year,
+        )
+        .length;
 
     setState(() {});
 
@@ -167,15 +171,15 @@ class _HomeScreenState extends State<HomeScreen>
 
     setState(() => _isLogging = true);
 
-    final id    = const Uuid().v4();
-    final now   = DateTime.now();
+    final id = const Uuid().v4();
+    final now = DateTime.now();
     final entry = LogEntry(id: id, timestamp: now);
     await LocalDB.save(entry);
 
     setState(() {
-      doneToday  = true;
+      doneToday = true;
       todayCount += 1;
-      lastTime   = now;
+      lastTime = now;
       _isLogging = false;
     });
 
@@ -191,19 +195,31 @@ class _HomeScreenState extends State<HomeScreen>
 
   String _formatLast(DateTime dt) {
     final today = DateTime.now();
-    final isToday = dt.day == today.day &&
-        dt.month == today.month && dt.year == today.year;
-    final h   = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
-    final m   = _pad(dt.minute);
-    final ap  = dt.hour < 12 ? 'AM' : 'PM';
+    final isToday =
+        dt.day == today.day && dt.month == today.month && dt.year == today.year;
+    final h = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
+    final m = _pad(dt.minute);
+    final ap = dt.hour < 12 ? 'AM' : 'PM';
     final pfx = isToday ? 'Today' : '${_pad(dt.day)}/${_pad(dt.month)}';
     return '$pfx  $h:$m $ap';
   }
 
   String _headerDate() {
-    const days   = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-    const months = ['JAN','FEB','MAR','APR','MAY','JUN',
-                    'JUL','AUG','SEP','OCT','NOV','DEC'];
+    const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+    const months = [
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC',
+    ];
     final d = DateTime.now();
     return '${days[d.weekday % 7]}  ${_pad(d.day)} ${months[d.month - 1]} ${d.year}';
   }
@@ -212,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen>
   String _heroWord() {
     if (!doneToday) return 'Not yet.';
     if (todayCount == 1) return 'Wented.';
-    return 'Wented\n×$todayCount';   // e.g. "Went ×3"
+    return 'Wented\n×$todayCount'; // e.g. "Went ×3"
   }
 
   // Sub-label under the hero word
@@ -225,27 +241,26 @@ class _HomeScreenState extends State<HomeScreen>
   // CTA button label — always tappable
   String _ctaLabel() {
     if (!doneToday) return 'I WENT';
-    return 'I WENT AGAIN';   // inviting, not blocking
+    return 'I WENT AGAIN'; // inviting, not blocking
   }
 
   // ── Build ────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarBrightness: Brightness.light,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Color(0xFFEEE8DC),
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Color(0xFFEEE8DC),
+      ),
+    );
 
     return Scaffold(
       backgroundColor: _linen,
       body: SafeArea(
         child: FadeTransition(
           opacity: _pageFade,
-          child: SlideTransition(
-            position: _pageSlide,
-            child: _buildLayout(),
-          ),
+          child: SlideTransition(position: _pageSlide, child: _buildLayout()),
         ),
       ),
     );
@@ -284,8 +299,8 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               Text(
                 _headerDate(),
-                style: const TextStyle(             
-                fontFamily: 'IBMPlexMono',
+                style: const TextStyle(
+                  fontFamily: 'IBMPlexMono',
                   color: _walnut,
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
@@ -309,9 +324,25 @@ class _HomeScreenState extends State<HomeScreen>
             padding: const EdgeInsets.only(top: 2),
             child: Row(
               children: [
-                
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 350),
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _linen,
+                  ),
+                ),
                 const SizedBox(width: 5),
-               
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 300),
+                  style: const TextStyle(fontFamily: 'IBMPlexMono'),
+                  child: Text('Lokesh' ,style: TextStyle(
+                    color:_terracotta
+                  ),),
+
+                ),
+                const SizedBox(width: 5),
               ],
             ),
           ),
@@ -411,7 +442,7 @@ class _HomeScreenState extends State<HomeScreen>
       padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
         border: Border(
-          top:    BorderSide(color: _rule, width: 1),
+          top: BorderSide(color: _rule, width: 1),
           bottom: BorderSide(color: _rule, width: 1),
         ),
       ),
@@ -424,11 +455,7 @@ class _HomeScreenState extends State<HomeScreen>
               shape: BoxShape.circle,
               border: Border.all(color: _rule, width: 1),
             ),
-            child: Icon(
-              Icons.schedule_outlined,
-              size: 14,
-              color: _dust,
-            ),
+            child: Icon(Icons.schedule_outlined, size: 14, color: _dust),
           ),
           const SizedBox(width: 12),
           Column(
@@ -448,17 +475,13 @@ class _HomeScreenState extends State<HomeScreen>
                 duration: const Duration(milliseconds: 300),
                 style: TextStyle(
                   fontFamily: 'IBMPlexMono',
-                  color: lastTime != null && doneToday
-                      ? _terracotta
-                      : _walnut,
+                  color: lastTime != null && doneToday ? _terracotta : _walnut,
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.4,
                 ),
                 child: Text(
-                  lastTime != null
-                      ? _formatLast(lastTime!)
-                      : 'No entry yet',
+                  lastTime != null ? _formatLast(lastTime!) : 'No entry yet',
                 ),
               ),
             ],
