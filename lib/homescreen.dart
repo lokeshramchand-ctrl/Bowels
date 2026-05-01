@@ -211,8 +211,8 @@ class _HomeScreenState extends State<HomeScreen>
   // Hero status word — reflects count when > 1
   String _heroWord() {
     if (!doneToday) return 'Not yet.';
-    if (todayCount == 1) return 'Went.';
-    return 'Went\n×$todayCount';   // e.g. "Went ×3"
+    if (todayCount == 1) return 'Wented.';
+    return 'Wented\n×$todayCount';   // e.g. "Went ×3"
   }
 
   // Sub-label under the hero word
@@ -309,23 +309,9 @@ class _HomeScreenState extends State<HomeScreen>
             padding: const EdgeInsets.only(top: 2),
             child: Row(
               children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 350),
-                  width: 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _isSyncing ? _terracotta : _rule,
-                  ),
-                ),
+                
                 const SizedBox(width: 5),
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 300),
-                  style: const TextStyle(
-                    fontFamily: 'IBMPlexMono',  
-                  ),
-                  child: Text(_isSyncing ? 'SYNC' : 'IDLE'),
-                  ),
+               
               ],
             ),
           ),
@@ -339,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen>
   // ── Stage ────────────────────────────────────────────────────────
   Widget _buildStage() {
     final accent = doneToday ? _terracotta : _walnut;
-    final ghostChar = doneToday ? 'v' : '?';
+    final ghostChar = doneToday ? 'L' : '?';
 
     return Stack(
       alignment: Alignment.center,
