@@ -68,6 +68,18 @@ flutter_launcher_icons:
   adaptive_icon_background: "#EEE8DC"   # optional (Android)
   adaptive_icon_foreground: "lib/assets/lol.png"
 flutter:
+  fonts:
+    - family: PlayfairDisplay
+      fonts:
+        - asset: lib/assets/fonts/PlayfairDisplay-Italic.ttf
+        - asset: lib/assets/fonts/PlayfairDisplay-BoldItalic.ttf
+          weight: 700
+
+    - family: IBMPlexMono
+      fonts:
+        - asset: lib/assets/fonts/IBMPlexMono-Regular.ttf
+        - asset: lib/assets/fonts/IBMPlexMono-SemiBold.ttf
+          weight: 600
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

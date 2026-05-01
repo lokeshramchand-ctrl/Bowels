@@ -759,8 +759,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                       const SizedBox(width: 4),
                       Text(
                         'BACK',
-                        style: GoogleFonts.ibmPlexMono(
-                            color: _dust, fontSize: 8, letterSpacing: 1.6),
+                        style: TextStyle(
+                          fontFamily: 'IBMPlexMono', color: _dust, fontSize: 8, letterSpacing: 1.6),
                       ),
                     ],
                   ),
@@ -768,7 +768,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                 const SizedBox(height: 5),
                 Text(
                   'LOG REGISTER',
-                  style: GoogleFonts.ibmPlexMono(
+                  style: TextStyle(
+                    fontFamily: 'IBMPlexMono',
                     color: _walnut,
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
@@ -778,8 +779,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                 const SizedBox(height: 2),
                 Text(
                   'ALL ENTRIES',
-                  style: GoogleFonts.ibmPlexMono(
-                      color: _dust, fontSize: 8, letterSpacing: 2.0),
+                    style: TextStyle(
+                      fontFamily: 'IBMPlexMono', color: _dust, fontSize: 8, letterSpacing: 2.0),
                 ),
               ],
             ),
@@ -795,7 +796,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                 children: [
                   Text(
                     '${_logs.length}',
-                    style: GoogleFonts.playfairDisplay(
+                    style: TextStyle(
+                      fontFamily: 'PlayfairDisplay',
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.w700,
                       fontSize: 34,
@@ -808,8 +810,8 @@ class _HistoryScreenState extends State<HistoryScreen>
               const SizedBox(height: 3),
               Text(
                 'TOTAL RECORDS',
-                style: GoogleFonts.ibmPlexMono(
-                    color: _dust, fontSize: 7.5, letterSpacing: 1.6),
+                style: TextStyle(
+                  fontFamily: 'IBMPlexMono', color: _dust, fontSize: 7.5, letterSpacing: 1.6),
               ),
               const SizedBox(height: 10),
 
@@ -830,7 +832,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                       const SizedBox(width: 5),
                       Text(
                         'ADD PAST ENTRY',
-                        style: GoogleFonts.ibmPlexMono(
+                        style: TextStyle(
+                          fontFamily: 'IBMPlexMono',
                           color: _walnut,
                           fontSize: 7.5,
                           fontWeight: FontWeight.w600,
@@ -856,7 +859,8 @@ class _HistoryScreenState extends State<HistoryScreen>
         children: [
           Text(
             'Empty.',
-            style: GoogleFonts.playfairDisplay(
+            style: TextStyle(
+              fontFamily: 'PlayfairDisplay',
               fontStyle: FontStyle.italic,
               fontWeight: FontWeight.w700,
               fontSize: 56,
@@ -867,8 +871,8 @@ class _HistoryScreenState extends State<HistoryScreen>
           const SizedBox(height: 12),
           Text(
             'NO ENTRIES YET',
-            style: GoogleFonts.ibmPlexMono(
-                color: _dust, fontSize: 9, letterSpacing: 2.4),
+            style: TextStyle(
+              fontFamily: 'IBMPlexMono', color: _dust, fontSize: 9, letterSpacing: 2.4),
           ),
           const SizedBox(height: 24),
           // Invite first backdate even from empty state
@@ -876,7 +880,8 @@ class _HistoryScreenState extends State<HistoryScreen>
             onTap: _showBackdateSheet,
             child: Text(
               'ADD A PAST ENTRY →',
-              style: GoogleFonts.ibmPlexMono(
+              style: TextStyle(
+                fontFamily: 'IBMPlexMono',
                 color: _walnut,
                 fontSize: 8.5,
                 letterSpacing: 2.0,
@@ -927,7 +932,8 @@ class _HistoryScreenState extends State<HistoryScreen>
           children: [
             Text(
               _monthName(group.sample),
-              style: GoogleFonts.playfairDisplay(
+              style: TextStyle(
+                fontFamily: 'PlayfairDisplay',
                 fontStyle: FontStyle.italic,
                 fontWeight: FontWeight.w700,
                 fontSize: 17,
@@ -938,8 +944,8 @@ class _HistoryScreenState extends State<HistoryScreen>
             const SizedBox(width: 10),
             Text(
               '$count ENTR${count == 1 ? 'Y' : 'IES'}',
-              style: GoogleFonts.ibmPlexMono(
-                  color: _dust, fontSize: 8, letterSpacing: 1.6),
+              style: TextStyle(
+                fontFamily: 'IBMPlexMono', color: _dust, fontSize: 8, letterSpacing: 1.6),
             ),
           ],
         ),
@@ -1014,7 +1020,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                   children: [
                     Text(
                       '${entry.timestamp.day}',
-                      style: GoogleFonts.playfairDisplay(
+                      style: TextStyle(
+                        fontFamily: 'PlayfairDisplay',
                         fontStyle: FontStyle.italic,
                         fontWeight: FontWeight.w700,
                         fontSize: 26,
@@ -1025,8 +1032,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                     const SizedBox(height: 3),
                     Text(
                       _dayAbbr(entry.timestamp),
-                      style: GoogleFonts.ibmPlexMono(
-                          color: _dust, fontSize: 7, letterSpacing: 1.8),
+                      style: TextStyle(
+                        fontFamily: 'IBMPlexMono', color: _dust, fontSize: 7, letterSpacing: 1.8),
                     ),
                   ],
                 ),
@@ -1048,7 +1055,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                         children: [
                           Text(
                             _time12(entry.timestamp),
-                            style: GoogleFonts.ibmPlexMono(
+                            style: TextStyle(
+                              fontFamily: 'IBMPlexMono',
                               color: _walnut,
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -1058,10 +1066,11 @@ class _HistoryScreenState extends State<HistoryScreen>
                           const SizedBox(height: 2),
                           Text(
                             _ampm(entry.timestamp),
-                            style: GoogleFonts.ibmPlexMono(
-                                color: _dust,
-                                fontSize: 8.5,
-                                letterSpacing: 1.4),
+                            style: TextStyle(
+                              fontFamily: 'IBMPlexMono',
+                              color: _dust,
+                              fontSize: 8.5,
+                              letterSpacing: 1.4),
                           ),
                         ],
                       ),
@@ -1075,7 +1084,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                           if (isBackdated) ...[
                             Text(
                               'BACKDATED',
-                              style: GoogleFonts.ibmPlexMono(
+                              style: TextStyle(
+                                fontFamily: 'IBMPlexMono',
                                 color: _dust.withOpacity(0.55),
                                 fontSize: 6.5,
                                 letterSpacing: 1.2,
@@ -1104,7 +1114,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                               const SizedBox(width: 5),
                               Text(
                                 isSynced ? 'SYNCED' : 'LOCAL',
-                                style: GoogleFonts.ibmPlexMono(
+                                style: TextStyle(
+                                  fontFamily: 'IBMPlexMono',
                                   color: isSynced ? _terracotta : _dust,
                                   fontSize: 7.5,
                                   letterSpacing: 1.4,
@@ -1169,7 +1180,8 @@ class _SheetRow extends StatelessWidget {
           children: [
             Text(
               label,
-              style: GoogleFonts.ibmPlexMono(
+              style: TextStyle(
+                fontFamily: 'IBMPlexMono',
                 color: dust,
                 fontSize: 8,
                 letterSpacing: 2.0,
@@ -1179,7 +1191,8 @@ class _SheetRow extends StatelessWidget {
               children: [
                 Text(
                   value,
-                  style: GoogleFonts.ibmPlexMono(
+                  style: TextStyle(
+                    fontFamily: 'IBMPlexMono',
                     color: walnut,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,

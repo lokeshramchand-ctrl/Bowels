@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'log_entry.dart';
 import 'local_db.dart';
 import 'api_service.dart';
@@ -285,7 +284,8 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               Text(
                 _headerDate(),
-                style: GoogleFonts.ibmPlexMono(
+                style: const TextStyle(             
+                fontFamily: 'IBMPlexMono',
                   color: _walnut,
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
@@ -295,7 +295,9 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(height: 3),
               Text(
                 'DAILY RECORD',
-                style: GoogleFonts.ibmPlexMono(
+
+                style: const TextStyle(
+                  fontFamily: 'IBMPlexMono',
                   color: _dust,
                   fontSize: 8,
                   letterSpacing: 2.2,
@@ -319,13 +321,11 @@ class _HomeScreenState extends State<HomeScreen>
                 const SizedBox(width: 5),
                 AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 300),
-                  style: GoogleFonts.ibmPlexMono(
-                    color: _isSyncing ? _terracotta : _dust,
-                    fontSize: 7.5,
-                    letterSpacing: 1.6,
+                  style: const TextStyle(
+                    fontFamily: 'IBMPlexMono',  
                   ),
                   child: Text(_isSyncing ? 'SYNC' : 'IDLE'),
-                ),
+                  ),
               ],
             ),
           ),
@@ -347,7 +347,8 @@ class _HomeScreenState extends State<HomeScreen>
         // Ghost background letter
         Text(
           ghostChar,
-          style: GoogleFonts.playfairDisplay(
+          style: TextStyle(
+            fontFamily: 'PlayfairDisplay',
             fontStyle: FontStyle.italic,
             fontSize: 220,
             height: 1,
@@ -374,7 +375,8 @@ class _HomeScreenState extends State<HomeScreen>
                     Text(
                       _heroWord(),
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.playfairDisplay(
+                      style: TextStyle(
+                        fontFamily: 'PlayfairDisplay',
                         fontStyle: FontStyle.italic,
                         fontWeight: FontWeight.w700,
                         fontSize: 68,
@@ -399,7 +401,8 @@ class _HomeScreenState extends State<HomeScreen>
                     // Sub-label
                     Text(
                       _subLabel(),
-                      style: GoogleFonts.ibmPlexMono(
+                      style: TextStyle(
+                        fontFamily: 'IBMPlexMono',
                         color: accent.withOpacity(0.45),
                         fontSize: 8.5,
                         fontWeight: FontWeight.w600,
@@ -447,7 +450,8 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               Text(
                 'LAST RECORDED',
-                style: GoogleFonts.ibmPlexMono(
+                style: TextStyle(
+                  fontFamily: 'IBMPlexMono',
                   color: _dust,
                   fontSize: 7.5,
                   letterSpacing: 1.8,
@@ -456,7 +460,8 @@ class _HomeScreenState extends State<HomeScreen>
               const SizedBox(height: 3),
               AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 300),
-                style: GoogleFonts.ibmPlexMono(
+                style: TextStyle(
+                  fontFamily: 'IBMPlexMono',
                   color: lastTime != null && doneToday
                       ? _terracotta
                       : _walnut,
@@ -502,7 +507,8 @@ class _HomeScreenState extends State<HomeScreen>
                   )
                 : Text(
                     _ctaLabel(), // "I WENT" / "I WENT AGAIN"
-                    style: GoogleFonts.ibmPlexMono(
+                    style: TextStyle(
+                      fontFamily: 'IBMPlexMono',
                       color: const Color(0xFFEEE8DC),
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
@@ -531,7 +537,8 @@ class _HomeScreenState extends State<HomeScreen>
           children: [
             Text(
               'VIEW HISTORY',
-              style: GoogleFonts.ibmPlexMono(
+              style: TextStyle(
+                fontFamily: 'IBMPlexMono',
                 color: _dust,
                 fontSize: 8.5,
                 letterSpacing: 2.6,
