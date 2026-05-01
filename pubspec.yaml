@@ -42,6 +42,7 @@ dependencies:
   path_provider: ^2.1.5
   google_fonts: ^8.0.2
   device_info_plus: ^13.1.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   build_runner: ^2.4.8
@@ -60,6 +61,12 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "lib/assets/lol.png"
+  adaptive_icon_background: "#EEE8DC"   # optional (Android)
+  adaptive_icon_foreground: "lib/assets/lol.png"
 flutter:
 
   # The following line ensures that the Material Icons font is
