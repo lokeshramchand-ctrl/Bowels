@@ -24,8 +24,10 @@ class ApiService {
     return jsonDecode(res.body)['data'];
   }
 
+  /// Throws an [Exception] if the server returns a non-2xx status code.
+  /// This ensures [SyncService] only marks entries as synced on real success.
   Future<void> createLog(String deviceId, String id, DateTime time) async {
-    await http.post(
+    final res = await http.post(
       Uri.parse('$baseUrl/log'),
       headers: {
         'Content-Type': 'application/json',
@@ -36,6 +38,13 @@ class ApiService {
         'timestamp': time.toIso8601String(),
       }),
     );
+
+    if (res.statusCode != 200 && res.statusCode != 201) {
+      debugPrint('[createLog] FAILED ${res.statusCode}: ${res.body}');
+      throw Exception('createLog failed: ${res.statusCode} ${res.body}');
+    }
+
+    debugPrint('[createLog] OK ${res.statusCode} id=$id');
   }
 
   Future<List> getRecent(String deviceId) async {

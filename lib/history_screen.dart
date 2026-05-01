@@ -112,9 +112,12 @@ class _HistoryScreenState extends State<HistoryScreen>
     try {
       await _sync.sync(widget.deviceId);
       if (mounted) {
-        setState(() => _loadLogs());
+        // Load fresh data from Hive BEFORE setState so the rebuild sees
+        // up-to-date isSynced flags and an accurate unsynced count.
+        _loadLogs();
+        final unsynced = LocalDB.getUnsynced().length;
+        setState(() {});
         if (!silent) {
-          final unsynced = LocalDB.getUnsynced().length;
           _showSnack(
             unsynced == 0 ? 'ALL ENTRIES SYNCED' : '$unsynced ENTRIES PENDING',
             unsynced == 0,
