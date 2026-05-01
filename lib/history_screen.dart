@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uuid/uuid.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'api_service.dart';
 import 'local_db.dart';
 import 'log_entry.dart';
+import 'sync_service.dart';
 
 // ─────────────────────────────────────────────────────────────────
 //  HistoryScreen  –  "Apothecary Logbook  /  Log Register"
@@ -49,6 +51,12 @@ class _HistoryScreenState extends State<HistoryScreen>
 
   // ── API ────────────────────────────────────────────────────────
   final ApiService _api = ApiService();
+  late final SyncService _sync;
+
+  // ── Sync state ─────────────────────────────────────────────────
+  bool _isSyncing = false;
+  bool _isOnline  = false;
+  late final Stream<List<ConnectivityResult>> _connectivityStream;
 
   // ── Animation ─────────────────────────────────────────────────
   late AnimationController _fadeCtrl;
@@ -57,7 +65,9 @@ class _HistoryScreenState extends State<HistoryScreen>
   @override
   void initState() {
     super.initState();
+    _sync = SyncService(_api);
     _loadLogs();
+    _initConnectivity();
 
     _fadeCtrl = AnimationController(
       vsync: this,
@@ -65,6 +75,90 @@ class _HistoryScreenState extends State<HistoryScreen>
     );
     _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOut);
     _fadeCtrl.forward();
+  }
+
+  Future<void> _initConnectivity() async {
+    // Check current status
+    final result = await Connectivity().checkConnectivity();
+    final online = !result.contains(ConnectivityResult.none);
+    if (mounted) setState(() => _isOnline = online);
+
+    // Auto-sync on open if online and there are unsynced entries
+    if (online && LocalDB.getUnsynced().isNotEmpty) {
+      _runSync(silent: true);
+    }
+
+    // Listen for changes
+    _connectivityStream = Connectivity().onConnectivityChanged;
+    _connectivityStream.listen((results) {
+      final nowOnline = !results.contains(ConnectivityResult.none);
+      if (mounted) {
+        final wasOffline = !_isOnline;
+        setState(() => _isOnline = nowOnline);
+        // Auto-sync when coming back online
+        if (nowOnline && wasOffline && LocalDB.getUnsynced().isNotEmpty) {
+          _runSync(silent: true);
+        }
+      }
+    });
+  }
+
+  // ── Sync logic ─────────────────────────────────────────────────
+  Future<void> _runSync({bool silent = false}) async {
+    if (_isSyncing || !_isOnline) return;
+
+    setState(() => _isSyncing = true);
+
+    try {
+      await _sync.sync(widget.deviceId);
+      if (mounted) {
+        setState(() => _loadLogs());
+        if (!silent) {
+          final unsynced = LocalDB.getUnsynced().length;
+          _showSnack(
+            unsynced == 0 ? 'ALL ENTRIES SYNCED' : '$unsynced ENTRIES PENDING',
+            unsynced == 0,
+          );
+        }
+      }
+    } catch (_) {
+      if (mounted && !silent) _showSnack('SYNC FAILED. CHECK CONNECTION.', false);
+    } finally {
+      if (mounted) setState(() => _isSyncing = false);
+    }
+  }
+
+  void _showSnack(String message, bool success) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: _walnut,
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        duration: const Duration(seconds: 2),
+        content: Row(
+          children: [
+            Container(
+              width: 6,
+              height: 6,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: success ? _terracotta : _dust,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Text(
+              message,
+              style: GoogleFonts.ibmPlexMono(
+                color: _linen,
+                fontSize: 9,
+                letterSpacing: 1.6,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   // ── Delete entry (local + remote) ──────────────────────────────
@@ -835,6 +929,61 @@ class _HistoryScreenState extends State<HistoryScreen>
                         style: TextStyle(
                           fontFamily: 'IBMPlexMono',
                           color: _walnut,
+                          fontSize: 7.5,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.6,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 6),
+
+              // ── FORCE SYNC button ──────────────────────────────
+              GestureDetector(
+                onTap: _isOnline && !_isSyncing ? () => _runSync() : null,
+                behavior: HitTestBehavior.opaque,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _isOnline && !_isSyncing ? _walnut : Colors.transparent,
+                    border: Border.all(
+                      color: _isOnline ? _walnut : _rule,
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_isSyncing)
+                        SizedBox(
+                          width: 8,
+                          height: 8,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 1.2,
+                            color: _linen,
+                          ),
+                        )
+                      else
+                        Icon(
+                          _isOnline ? Icons.sync : Icons.sync_disabled,
+                          size: 9,
+                          color: _isOnline ? _linen : _dust,
+                        ),
+                      const SizedBox(width: 5),
+                      Text(
+                        _isSyncing
+                            ? 'SYNCING...'
+                            : _isOnline
+                                ? 'FORCE SYNC'
+                                : 'OFFLINE',
+                        style: TextStyle(
+                          fontFamily: 'IBMPlexMono',
+                          color: _isOnline && !_isSyncing ? _linen : _dust,
                           fontSize: 7.5,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 1.6,
