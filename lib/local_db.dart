@@ -27,4 +27,8 @@ class LocalDB {
   static Future<void> update(LogEntry entry) async {
     await entry.save();
   }
+
+  static Future<void> delete(String id) async {
+    await box.delete(id);
+  }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -44,5 +45,22 @@ class ApiService {
     );
 
     return jsonDecode(res.body)['data'] ?? [];
+  }
+
+  Future<bool> deleteLog(String deviceId, String id) async {
+    try {
+      final res = await http.delete(
+        Uri.parse('$baseUrl/log/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'x-device-id': deviceId,
+        },
+      );
+      debugPrint('[deleteLog] DELETE /log/$id → ${res.statusCode} ${res.body}');
+      return res.statusCode == 200 || res.statusCode == 204 || res.statusCode == 404;
+    } catch (e) {
+      debugPrint('[deleteLog] Exception: $e');
+      return false;
+    }
   }
 }

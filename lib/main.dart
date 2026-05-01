@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         '/': (_) => HomeScreen(deviceId: deviceId),
-        '/history': (_) => const HistoryScreen(),
+        '/history': (_) => HistoryScreen(deviceId: deviceId),
       },
     );
   }

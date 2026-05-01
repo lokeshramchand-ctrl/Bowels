@@ -22,12 +22,6 @@ import 'sync_service.dart';
 //  Fonts:
 //    Display  – Playfair Display Italic  (hero status word)
 //    Mono     – IBM Plex Mono            (labels, timestamps, buttons)
-//
-//  Concept:
-//    A private health logbook from 1890. The status word ("Not yet" /
-//    "Went") is enormous italic serif — the whole screen answers the
-//    question. Everything else is terse mono metadata. No color until
-//    the user logs; then terracotta bleeds in like dried ink.
 // ─────────────────────────────────────────────────────────────────
 
 class HomeScreen extends StatefulWidget {
@@ -41,10 +35,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with TickerProviderStateMixin {
 
-  // ── Logic (unchanged) ──────────────────────────────────────────
+  // ── Logic ──────────────────────────────────────────────────────
   final api = ApiService();
   late SyncService sync;
-  bool doneToday = false;
+  bool doneToday = false;   // true if at least one entry exists today
+  int todayCount = 0;       // how many times logged today
   DateTime? lastTime;
 
   // ── UI state ───────────────────────────────────────────────────
@@ -128,18 +123,28 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
-  // ── Unchanged logic ─────────────────────────────────────────────
+  // ── Load ─────────────────────────────────────────────────────────
   Future<void> load() async {
-    final logs = LocalDB.getAll();
+    final logs  = LocalDB.getAll();
+    final today = DateTime.now();
+
     if (logs.isNotEmpty) {
       logs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
       lastTime = logs.first.timestamp;
     }
-    final today = DateTime.now();
+
+    // doneToday = at least one entry today
     doneToday = logs.any((e) =>
         e.timestamp.day   == today.day   &&
         e.timestamp.month == today.month &&
         e.timestamp.year  == today.year);
+
+    // todayCount = total entries today (may be > 1)
+    todayCount = logs.where((e) =>
+        e.timestamp.day   == today.day   &&
+        e.timestamp.month == today.month &&
+        e.timestamp.year  == today.year).length;
+
     setState(() {});
 
     _pageCtrl.forward();
@@ -151,9 +156,11 @@ class _HomeScreenState extends State<HomeScreen>
     if (mounted) setState(() => _isSyncing = false);
   }
 
+  // ── Add log ───────────────────────────────────────────────────────
+  // Guard: only block concurrent taps, NOT repeat logs.
+  // The user may go multiple times per day — every tap is valid.
   Future<void> addLog() async {
-    // ── unchanged logic ──
-    if (doneToday || _isLogging) return;
+    if (_isLogging) return; // debounce only; doneToday never blocks
     HapticFeedback.mediumImpact();
 
     await _pressCtrl.forward();
@@ -168,6 +175,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     setState(() {
       doneToday  = true;
+      todayCount += 1;
       lastTime   = now;
       _isLogging = false;
     });
@@ -199,6 +207,26 @@ class _HomeScreenState extends State<HomeScreen>
                     'JUL','AUG','SEP','OCT','NOV','DEC'];
     final d = DateTime.now();
     return '${days[d.weekday % 7]}  ${_pad(d.day)} ${months[d.month - 1]} ${d.year}';
+  }
+
+  // Hero status word — reflects count when > 1
+  String _heroWord() {
+    if (!doneToday) return 'Not yet.';
+    if (todayCount == 1) return 'Went.';
+    return 'Went\n×$todayCount';   // e.g. "Went ×3"
+  }
+
+  // Sub-label under the hero word
+  String _subLabel() {
+    if (!doneToday) return 'AWAITING · TODAY';
+    if (todayCount == 1) return 'LOGGED · TODAY';
+    return 'LOGGED · $todayCount× · TODAY';
+  }
+
+  // CTA button label — always tappable
+  String _ctaLabel() {
+    if (!doneToday) return 'I WENT';
+    return 'I WENT AGAIN';   // inviting, not blocking
   }
 
   // ── Build ────────────────────────────────────────────────────────
@@ -342,9 +370,10 @@ class _HomeScreenState extends State<HomeScreen>
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Hero word
+                    // Hero word — shows count when > 1
                     Text(
-                      doneToday ? 'Went.' : 'Not yet.',
+                      _heroWord(),
+                      textAlign: TextAlign.center,
                       style: GoogleFonts.playfairDisplay(
                         fontStyle: FontStyle.italic,
                         fontWeight: FontWeight.w700,
@@ -369,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                     // Sub-label
                     Text(
-                      doneToday ? 'LOGGED · TODAY' : 'AWAITING · TODAY',
+                      _subLabel(),
                       style: GoogleFonts.ibmPlexMono(
                         color: accent.withOpacity(0.45),
                         fontSize: 8.5,
@@ -399,7 +428,6 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       child: Row(
         children: [
-          // Clock icon
           Container(
             width: 28,
             height: 28,
@@ -450,30 +478,32 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   // ── Primary CTA ──────────────────────────────────────────────────
+  // Button is ALWAYS active — user can log multiple times per day.
   Widget _buildCTA() {
     return ScaleTransition(
       scale: _pressScale,
       child: GestureDetector(
-        onTap: addLog,
+        onTap: addLog, // never null — doneToday does NOT disable
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           width: double.infinity,
           height: 52,
-          color: doneToday ? _rule : _walnut,
+          // Stays walnut (active) whether first or subsequent log
+          color: _walnut,
           child: Center(
             child: _isLogging
-                ? SizedBox(
+                ? const SizedBox(
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(
                       strokeWidth: 1.5,
-                      color: _linen,
+                      color: Color(0xFFEEE8DC),
                     ),
                   )
                 : Text(
-                    doneToday ? 'DONE FOR TODAY' : 'I WENT',
+                    _ctaLabel(), // "I WENT" / "I WENT AGAIN"
                     style: GoogleFonts.ibmPlexMono(
-                      color: doneToday ? _dust : _linen,
+                      color: const Color(0xFFEEE8DC),
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 3.2,
@@ -488,7 +518,10 @@ class _HomeScreenState extends State<HomeScreen>
   // ── History link ─────────────────────────────────────────────────
   Widget _buildHistoryTap() {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/history'),
+      onTap: () => Navigator.pushNamed(context, '/history').then((_) {
+        // Refresh in case backdated entries were added on history screen
+        if (mounted) load();
+      }),
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
         width: double.infinity,
